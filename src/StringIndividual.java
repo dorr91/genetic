@@ -20,6 +20,10 @@ public class StringIndividual extends Individual<StringIndividual> {
 	public StringIndividual(String s) {
 		this.s = s;
 	}
+	public StringIndividual(String s, double rate) {
+		this.s = s;
+		mutationRate = rate;
+	}
 	
 	public String getString() { return s; }
 	
@@ -61,10 +65,27 @@ public class StringIndividual extends Individual<StringIndividual> {
 			else
 				next = s2.charAt(i);
 			
-			//with low probability, randomly permute this element
-			if(r.nextDouble() < 0.1) {
-				next = alphabet.charAt(r.nextInt(alphabet.length()));
+			//with low probability, permute this element
+
+			double mut = r.nextDouble();
+			int range = 0;
+			/* for some k >= 1, mut < mutationRate^k.
+			 * we will use this k as a range in the alphabet in which we can mutate,
+			 * centered at the character we already chose,
+			 * so that with higher likelihood we mutate closer within the alphabet
+			 * and with lower likelihood we mutate farther */
+			while(mut < Math.pow(mutationRate, range)
+					&& range < alphabet.length()) {
+				range++;
 			}
+			int pos = alphabet.indexOf(next);
+			int low = pos - range, high = pos + range;
+			if (low < 0) low = 0;
+			if (high >= alphabet.length()) high = alphabet.length() - 1;
+			int mutationIndex = r.nextBoolean() ? low : high;
+			
+			next = alphabet.charAt(mutationIndex);
+
 			builder.append(next);
 		}
 		

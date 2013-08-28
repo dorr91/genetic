@@ -16,12 +16,13 @@ public class StringPopRunner {
 		
 		sp.generate();
 		
-		while(sp.score(sp.best()) < 0) {
-			System.out.println(sp.best() + "\t= " + sp.score(sp.best()));
+		StringIndividual prev = null;
+		for(int i=0; sp.score(sp.best()) < 0; i++) {
+			if (i % 100 == 0)
+				System.out.println(sp.best() + "\t= " + sp.score(sp.best()));
+			double best = -sp.score(sp.best());
+			StringIndividual.setMutationRate(Math.sin(1.0 / best));
 			sp.generate();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {}
 		}
 	}
 }
