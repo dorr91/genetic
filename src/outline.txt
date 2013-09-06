@@ -1,0 +1,2 @@
+class Tuner
+	a class that iterates over the parameters for a given species, returning the best ones (fastest convergence, best final result, best average result (need to always generate a viable result?), most sol. space coverage?)

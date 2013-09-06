@@ -86,7 +86,7 @@ public abstract class Population<I extends Individual<I>> {
 		//of the survivors
 		
 		//Each member is chosen as a parent with likelihood proportional
-		//to its "contribution" to the gene pool
+		//to its contribution to the gene pool
 		for(int i=0; i<normedScores.length; i++) {
 			Random r = new Random();
 			double x = r.nextDouble() * sum;

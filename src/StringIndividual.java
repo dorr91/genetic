@@ -83,6 +83,7 @@ public class StringIndividual extends Individual<StringIndividual> {
 			if (low < 0) low = 0;
 			if (high >= alphabet.length()) high = alphabet.length() - 1;
 			int mutationIndex = r.nextBoolean() ? low : high;
+			//int mutationIndex = r.nextInt(alphabet.length());
 			
 			next = alphabet.charAt(mutationIndex);
 
