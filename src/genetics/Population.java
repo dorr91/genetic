@@ -7,39 +7,31 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-public abstract class Population<I extends Individual<I>> {
-	I best = null;
-	public Comparator<I> comparator = new IndividualComparator();
-	int generationCounter;
+public class Population<S extends Species<S>> {
+	S best = null;
+	public Comparator<S> comparator = new SpeciesComparator();
+
+	long generationCounter;
 	int generationSize, survivorsPerGeneration;
-	PriorityQueue<I> currentGeneration;
+	PriorityQueue<S> currentGeneration;
 	
-	public Population(int generationSize, int survivorsPerGeneration) {
-		this.generationSize = generationSize;
+	public Population(Collection<S> gen0, int survivorsPerGeneration) {
+		generationSize = gen0.size();
 		this.survivorsPerGeneration = survivorsPerGeneration;
 		generationCounter = 0;
-		
-		currentGeneration = new PriorityQueue<I>(generationSize, comparator);
-	}
 
-	//after some internal debate, the score function goes here
-	//because generally the same pressures applies to the whole group
-	//and not individual members
-	public abstract double score(I member);
-	
-	//this can't go in the constructor, because the score function may require
-	//state that can't be established yet in the extending class
-	public void initialize(Collection<I> gen0) {
+		currentGeneration = new PriorityQueue<S>(generationSize, comparator);
 		currentGeneration.addAll(gen0);
 	}
-	
-	public List<I> getSurvivors() {
+
+
+	public List<S> getSurvivors() {
 		//copy the current generation so we can freely modify it
-		PriorityQueue<I> current = new PriorityQueue<I>(
+		PriorityQueue<S> current = new PriorityQueue<S>(
 				currentGeneration.size(), comparator);
 		current.addAll(currentGeneration);
 		
-		List<I> top = new ArrayList<I>();
+		List<S> top = new ArrayList<S>();
 		
 		//pop the best of this generation into a new list.
 		for(int i=0; i<survivorsPerGeneration; i++) {
@@ -50,25 +42,25 @@ public abstract class Population<I extends Individual<I>> {
 		return top;
 	}
 	
-	public I best() {
+	public S best() {
 		return best;
 	}
-	public Collection<I> getCurrentGen() {
+	public Collection<S> getCurrentGen() {
 		//deep copy so the caller can't modify our internal state
-		return new PriorityQueue<I>(currentGeneration);
+		return new PriorityQueue<S>(currentGeneration);
 	}
 	
 	public void generate() {
-		List<I> survivors = getSurvivors();
+		List<S> survivors = getSurvivors();
 		
-		PriorityQueue<I> newGeneration = 
-				new PriorityQueue<I>(generationSize, comparator);
+		PriorityQueue<S> newGeneration = 
+				new PriorityQueue<S>(generationSize, comparator);
 		
 		double[] normedScores = new double[survivors.size()];
 		
 		double min = Double.POSITIVE_INFINITY;
 		for(int i=0; i<survivors.size(); i++) {
-			normedScores[i] = score(survivors.get(i));
+			normedScores[i] = survivors.get(i).score();
 			if(normedScores[i] < min) 
 				min = normedScores[i];
 		}
@@ -103,21 +95,21 @@ public abstract class Population<I extends Individual<I>> {
 			}
 			
 			//we chose parents j and k
-			I child = survivors.get(p).mate(survivors.get(q));
+			S child = survivors.get(p).mate(survivors.get(q));
 			newGeneration.add(child);
 		}
 		
 		generationCounter++;
 		currentGeneration = newGeneration;
-		if(best == null || score(currentGeneration.peek()) >= score(best))
+		if(best == null || currentGeneration.peek().score() >= best.score())
 			best = currentGeneration.peek();
 	}
 	
 	
-	//a comparator for the Individual class, sorting via the score() function
-	private class IndividualComparator implements Comparator<I> {
-		public int compare(I mem1, I mem2) {
-			double score1 = score(mem1), score2 = score(mem2);
+	//a comparator for the Species class, sorting via the score() function
+	private class SpeciesComparator implements Comparator<S> {
+		public int compare(S mem1, S mem2) {
+			double score1 = mem1.score(), score2 = mem2.score();
 			if(score1 == score2) return 0;
 			
 			//higher score = better
