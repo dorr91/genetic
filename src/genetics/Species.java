@@ -10,7 +10,6 @@ public abstract class Species<S extends Species<?>> {
                 mutationRate = newRate; 
         } 
 	public abstract double score();
-	
-	public abstract S mate(S o);
 
+	public abstract S mate(S o);
 }

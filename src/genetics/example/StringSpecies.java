@@ -1,5 +1,6 @@
-import java.util.Random;
+package genetics.example;
 
+import java.util.Random;
 import genetics.Species;
 
 public class StringSpecies extends Species<StringSpecies> {

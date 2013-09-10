@@ -1,39 +1,34 @@
 package genetics;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-public class Tuner<PopType extends Population, IndivType extends Individual> {
-	public void test(int indivsPerGen, int survivorsPerGen) {
-		/* TODO: multithread */
-		int duration = 2; //time to let each setup run, in minutes
+public class Tuner<S extends Species<S>> {
+	public void testConstantMutationRate(Collection<S> g0, int survivorsPerGen) {
+		/* TODO: multithread 
+		 * 	(problem: species-level properties, like mutation rate and target)  */
+		int duration = 60; //time to let each setup run, in seconds
 
-		Collection<IndivType> g0 = new ArrayList<IndivType>();
-		while (g0.size() < indivsPerGen) g0.add(IndivType.random());
+		Population<S> pop = new Population<S>(g0, survivorsPerGen);
 
-		/* TODO: allow other params? ie target string for string population... */
-		PopType population = new PopType(indivsPerGen, survivorsPerGen);
-		population.initialize(g0);
-
-		int i = 0;
+		long i = 0;
 		long startTime = System.currentTimeMillis();
 		long elapsed = 0;
 		/* run for 10 minutes or until it finds the optimal answer */
-		while (elapsed < (duration*60*1000) && population.score(population.best) < 0) {
-			population.generate();
+		while (elapsed < (duration*1000) && pop.best().score() < 0) {
+			pop.generate();
 			i++;
 			elapsed = System.currentTimeMillis() - startTime;
 		}
 
-		double best = population.score(population.best());
+		double best = pop.best().score();
 		if (best < 0) {
-			System.out.println("Score " + best + " after " + duration + " minutes.");
-			System.out.println("\tmutation rate: " + IndivType.getMutationRate());
-			System.out.println("\t" + indivsPerGen + " individuals"
+			System.out.println("Score " + best + " after " + duration + " seconds.");
+			System.out.println("\tmutation rate: " + S.getMutationRate());
+			System.out.println("\t" + g0.size() + " individuals"
 				+ " per generation, with " + survivorsPerGen + 
 				" survivors");
 		} else {
-			System.out.println("Found optimal solution " + population.best() +
+			System.out.println("Found optimal solution " + pop.best() +
 				" after " + (elapsed/1000) + " seconds.");
 		}
 	}
