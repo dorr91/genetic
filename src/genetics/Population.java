@@ -55,6 +55,8 @@ public class Population<S extends Species<S>> {
 		
 		PriorityQueue<S> newGeneration = 
 				new PriorityQueue<S>(generationSize, comparator);
+		// artificially add the best so far so we don't lose progress
+		if (best != null) newGeneration.add(best);
 		
 		double[] normedScores = new double[survivors.size()];
 		

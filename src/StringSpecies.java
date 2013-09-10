@@ -1,33 +1,19 @@
 import java.util.Random;
 
-import genetics.Individual;
+import genetics.Species;
 
-
-public class StringIndividual extends Individual<StringIndividual> {
+public class StringSpecies extends Species<StringSpecies> {
+	/* Class fields */
+	private static String target = "Hello World";
 	public static final String alphabet = ""
-			+ " abcdefghijklmnopqrstuvwxyz"
-			//+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			+ "1234567890";
-			//+ "`~!@#$%^&*()-_=+"
-			//+ ".?,:;'`\"/<>\\\r\n\t";
-	/*
-	 * Properties of a string:
-	 * 	length
-	 * 	character at each position
-	 */
-	private String s;
-	
-	public StringIndividual(String s) {
-		this.s = s;
-	}
-	public StringIndividual(String s, double rate) {
-		this.s = s;
-		mutationRate = rate;
-	}
-	
-	public String getString() { return s; }
-	
-	public static StringIndividual random() {
+		+ " abcdefghijklmnopqrstuvwxyz"
+		//+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		+ "1234567890";
+		//+ "`~!@#$%^&*()-_=+"
+		//+ ".?,:;'`\"/<>\\\r\n\t";
+
+	/* Class methods */
+	public static StringSpecies random() {
 		Random r = new Random();
 		int length = r.nextInt(25) + 1; //nonzero length
 		StringBuilder builder = new StringBuilder(length);
@@ -35,12 +21,51 @@ public class StringIndividual extends Individual<StringIndividual> {
 			builder.append(alphabet.charAt(r.nextInt(alphabet.length())));
 		}
 		
-		return new StringIndividual(builder.toString());
+		return new StringSpecies(builder.toString());
 	}
 
+	public static void setTarget(String newTarget) {
+		target = newTarget;
+	}
+	public static String getTarget() {
+		return target;
+	}
+
+
+	/* Instance fields */
+	private String s;
+
+	/* Constructors */
+	public StringSpecies(String s) {
+		this.s = s;
+	}
+	public StringSpecies(String s, double rate) {
+		this.s = s;
+		mutationRate = rate;
+	}
+	
+	/* Instance methods */
+	public String getString() { return s; }
+	
 	@Override
-	public StringIndividual mate(StringIndividual o) {
-		StringIndividual child = null;
+        public double score() {
+                double score = 0;
+
+                for(int i=0; i<s.length() && i<target.length(); i++) {
+                        char x = s.charAt(i), y = target.charAt(i);
+                        double diff = alphabet.indexOf(x) - alphabet.indexOf(y);
+                        score -= Math.pow(diff,2);
+                }
+
+                score -= alphabet.length() * Math.abs(target.length() - s.length());
+
+                return score;
+        }
+
+
+	@Override
+	public StringSpecies mate(StringSpecies o) {
+		StringSpecies child = null;
 		StringBuilder builder = new StringBuilder();
 		
 		Random r = new Random();
@@ -69,7 +94,7 @@ public class StringIndividual extends Individual<StringIndividual> {
 
 			double mut = r.nextDouble();
 			int range = 0;
-			/* for some k >= 1, mut < mutationRate^k.
+			/* for some largest k >= 1, mut < mutationRate^k.
 			 * we will use this k as a range in the alphabet in which we can mutate,
 			 * centered at the character we already chose,
 			 * so that with higher likelihood we mutate closer within the alphabet
@@ -103,9 +128,7 @@ public class StringIndividual extends Individual<StringIndividual> {
 			}
 		}
 		
-		//TODO: mutate the string a little
-		
-		child = new StringIndividual(builder.toString());
+		child = new StringSpecies(builder.toString());
 		return child;
 	}
 	
