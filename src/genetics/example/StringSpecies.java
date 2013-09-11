@@ -40,10 +40,6 @@ public class StringSpecies extends Species<StringSpecies> {
 	public StringSpecies(String s) {
 		this.s = s;
 	}
-	public StringSpecies(String s, double rate) {
-		this.s = s;
-		mutationRate = rate;
-	}
 	
 	/* Instance methods */
 	public String getString() { return s; }
@@ -65,7 +61,7 @@ public class StringSpecies extends Species<StringSpecies> {
 
 
 	@Override
-	public StringSpecies mate(StringSpecies o) {
+	public StringSpecies mate(StringSpecies o, double mutationRate) {
 		StringSpecies child = null;
 		StringBuilder builder = new StringBuilder();
 		

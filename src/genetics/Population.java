@@ -9,22 +9,29 @@ import java.util.Random;
 
 public class Population<S extends Species<S>> {
 	S best = null;
-	public Comparator<S> comparator = new SpeciesComparator();
+	private Comparator<S> comparator = new SpeciesComparator();
 
-	long generationCounter;
 	int generationSize, survivorsPerGeneration;
+	long generationCounter;
+	double mutationRate;
+
 	PriorityQueue<S> currentGeneration;
 	
-	public Population(Collection<S> gen0, int survivorsPerGeneration) {
+	/* Constructor */
+	public Population(Collection<S> gen0, int survivorsPerGeneration, 
+			double mutationRate) {
 		generationSize = gen0.size();
 		this.survivorsPerGeneration = survivorsPerGeneration;
 		generationCounter = 0;
 
 		currentGeneration = new PriorityQueue<S>(generationSize, comparator);
 		currentGeneration.addAll(gen0);
+		
+		this.mutationRate = mutationRate;
 	}
 
 
+	/* Accessors */
 	public List<S> getSurvivors() {
 		//copy the current generation so we can freely modify it
 		PriorityQueue<S> current = new PriorityQueue<S>(
@@ -49,7 +56,10 @@ public class Population<S extends Species<S>> {
 		//deep copy so the caller can't modify our internal state
 		return new PriorityQueue<S>(currentGeneration);
 	}
+	public double getMutationRate() { return mutationRate; }
+	public void setMutationRate(double newRate) { mutationRate = newRate; }
 	
+	/* Methods with side-effects (ie methods that do something) */
 	public void generate() {
 		List<S> survivors = getSurvivors();
 		
@@ -97,7 +107,7 @@ public class Population<S extends Species<S>> {
 			}
 			
 			//we chose parents j and k
-			S child = survivors.get(p).mate(survivors.get(q));
+			S child = survivors.get(p).mate(survivors.get(q), mutationRate);
 			newGeneration.add(child);
 		}
 		
@@ -108,8 +118,9 @@ public class Population<S extends Species<S>> {
 	}
 	
 	
-	//a comparator for the Species class, sorting via the score() function
+	/* Helper class */
 	private class SpeciesComparator implements Comparator<S> {
+		//a comparator for the Species class, sorting via the score() function
 		public int compare(S mem1, S mem2) {
 			double score1 = mem1.score(), score2 = mem2.score();
 			if(score1 == score2) return 0;

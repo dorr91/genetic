@@ -8,7 +8,11 @@ public class Tuner<S extends Species<S>> {
 		 * 	(problem: species-level properties, like mutation rate and target)  */
 		int duration = 60; //time to let each setup run, in seconds
 
-		Population<S> pop = new Population<S>(g0, survivorsPerGen);
+		// defaulting to mutation rate of 0.01 for no particular reason.
+		// eventually will iterate through rates.
+		// or find one by a genetic algorithm...
+		double mutationRate = 0.01;
+		Population<S> pop = new Population<S>(g0, survivorsPerGen, mutationRate);
 
 		long i = 0;
 		long startTime = System.currentTimeMillis();
@@ -23,7 +27,7 @@ public class Tuner<S extends Species<S>> {
 		double best = pop.best().score();
 		if (best < 0) {
 			System.out.println("Score " + best + " after " + duration + " seconds.");
-			System.out.println("\tmutation rate: " + S.getMutationRate());
+			System.out.println("\tmutation rate: " + mutationRate);
 			System.out.println("\t" + g0.size() + " individuals"
 				+ " per generation, with " + survivorsPerGen + 
 				" survivors");

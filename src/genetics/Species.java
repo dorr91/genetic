@@ -5,11 +5,7 @@ package genetics;
 public abstract class Species<S extends Species<?>> {
 	protected static double mutationRate;
 
-	public static double getMutationRate() { return mutationRate; }
-        public static void setMutationRate(double newRate) { 
-                mutationRate = newRate; 
-        } 
 	public abstract double score();
 
-	public abstract S mate(S o);
+	public abstract S mate(S o, double mutationRate);
 }

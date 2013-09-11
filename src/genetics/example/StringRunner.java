@@ -28,14 +28,12 @@ public class StringRunner {
 		}
 		
 		StringSpecies.setTarget(target);
-		StringSpecies.setMutationRate(rate);
 
 		Collection<StringSpecies> g0 = new ArrayList<StringSpecies>();
 		while(g0.size() < 100) g0.add(StringSpecies.random());
 		Population<StringSpecies> pop = 
-			new Population<StringSpecies>(g0, survivorsPerGen);
+			new Population<StringSpecies>(g0, survivorsPerGen, rate);
 		
-		StringSpecies.setMutationRate(0.01);
 		pop.generate();
 		String prev = "";
 		long i;
