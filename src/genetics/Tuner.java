@@ -36,4 +36,17 @@ public class Tuner<S extends Species<S>> {
 				" after " + (elapsed/1000) + " seconds.");
 		}
 	}
+
+}
+
+class RoundStats<S extends Species<S>> {
+	public Population<S> population;
+	public double score; //best score
+	public boolean finished; //found an optimal solution before time was up?
+	public long runtime; //seconds
+
+	public RoundStats(Population<S> pop) {
+		population = pop;
+		score = pop.best().score();
+	}
 }
