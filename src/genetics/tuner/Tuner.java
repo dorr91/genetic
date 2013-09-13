@@ -1,6 +1,8 @@
-package genetics;
+package genetics.tuner;
 
 import java.util.Collection;
+import genetics.Species;
+import genetics.Population;
 
 public class Tuner<S extends Species<S>> {
 	public void testConstantMutationRate(Collection<S> g0, int survivorsPerGen) {
@@ -17,7 +19,8 @@ public class Tuner<S extends Species<S>> {
 		long i = 0;
 		long startTime = System.currentTimeMillis();
 		long elapsed = 0;
-		/* run for 10 minutes or until it finds the optimal answer */
+
+		/* run for duration or until it finds an optimal solution */
 		while (elapsed < (duration*1000) && pop.best().score() < 0) {
 			pop.generate();
 			i++;
